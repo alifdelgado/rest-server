@@ -3,13 +3,19 @@ const morgan = require("morgan");
 const path = require("path");
 const cors = require("cors");
 const userRoutes = require("../routes/user.routes");
+const connection = require("../database/config");
 
 class Server {
   constructor() {
     this.app = express();
     this.port = process.env.PORT || 3000;
+    this.dbConnection();
     this.middlewares();
     this.routes();
+  }
+
+  async dbConnection() {
+    await connection();
   }
 
   middlewares() {
