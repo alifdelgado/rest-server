@@ -3,6 +3,7 @@ const morgan = require("morgan");
 const path = require("path");
 const cors = require("cors");
 const userRoutes = require("../routes/user.routes");
+const authRoutes = require("../routes/auth.routes");
 const connection = require("../database/config");
 
 class Server {
@@ -27,6 +28,7 @@ class Server {
 
   routes() {
     this.app.use("/api/users", userRoutes);
+    this.app.use("/api/auth", authRoutes);
   }
 
   listen() {

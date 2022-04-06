@@ -1,11 +1,8 @@
 const { Router } = require("express");
 const { check } = require("express-validator");
 const UserController = require("../controllers/user.controller");
-const {
-  isAValidRole,
-  emailExists,
-  checkUserById,
-} = require("../helpers/db-validators");
+const dbValidators = require("../helpers/db-validators");
+const tokenMethods = require("../middlewares/validate-jwt");
 const { validateFields } = require("../middlewares/validate-fields");
 const router = Router();
 const userController = new UserController();
@@ -19,8 +16,8 @@ router.post(
       min: 6,
     }),
     check("email", "The email is not valid").isEmail(),
-    check("email").custom(emailExists),
-    check("role").custom(isAValidRole),
+    check("email").custom(dbValidators.emailExists),
+    check("role").custom(dbValidators.isAValidRole),
     validateFields,
   ],
   userController.saveUser
@@ -29,8 +26,8 @@ router.put(
   "/:id",
   [
     check("id", "Id is not valid").isMongoId(),
-    check("id").custom(checkUserById),
-    check("role").custom(isAValidRole),
+    check("id").custom(dbValidators.checkUserById),
+    check("role").custom(dbValidators.isAValidRole),
     validateFields,
   ],
   userController.updateUser
@@ -38,8 +35,11 @@ router.put(
 router.delete(
   "/:id",
   [
+    tokenMethods.validateJWT,
+    // tokenMethods.validateAdminRole,
+    tokenMethods.hasAuthorizedRoles("ADMIN_ROLE", "SALES_ROLE"),
     check("id", "Id is not valid").isMongoId(),
-    check("id").custom(checkUserById),
+    check("id").custom(dbValidators.checkUserById),
     validateFields,
   ],
   userController.deleteUser

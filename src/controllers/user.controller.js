@@ -31,13 +31,14 @@ class UserController {
       rest.password = bcryptjs.hashSync(password, salt);
     }
     const user = await User.findByIdAndUpdate(id, rest);
-    return res.status(200).json({ user });
+    res.status(200).json({ user });
   }
 
   async deleteUser(req, res) {
     const { id } = req.params;
     const user = await User.findByIdAndUpdate(id, { state: false });
-    res.status(200).json({});
+    const authUser = req.user;
+    res.status(200).json({ user, authUser });
   }
 }
 
