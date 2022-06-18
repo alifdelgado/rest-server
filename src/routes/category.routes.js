@@ -26,7 +26,26 @@ router.post(
   ],
   categoryController.createCategory
 );
-router.put("/:id", categoryController.updateCategory);
-router.delete("/:id", categoryController.deleteCategory);
+router.put(
+  "/:id",
+  [
+    tokenMethods.validateJWT,
+    check("name", "The name is required").not().isEmpty(),
+    check("id").custom(dbValidators.categoryExists),
+    validateFields,
+  ],
+  categoryController.updateCategory
+);
+router.delete(
+  "/:id",
+  [
+    tokenMethods.validateJWT,
+    tokenMethods.validateAdminRole,
+    check("id", "Not a mondo id valid").isMongoId(),
+    check("id").custom(dbValidators.categoryExists),
+    validateFields,
+  ],
+  categoryController.deleteCategory
+);
 
 module.exports = router;

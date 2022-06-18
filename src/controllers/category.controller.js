@@ -1,4 +1,3 @@
-const { query } = require("express");
 const Category = require("../models/category");
 
 class CategoryController {
@@ -40,15 +39,20 @@ class CategoryController {
 
   async updateCategory(req, res) {
     const { id } = req.params;
-    const category = await Category.findById(id);
-    res.json("update category");
+    const { status, user, ...data } = req.body;
+    data.name = data.name.toUpperCase();
+    data.user = req.user._id;
+    const category = await Category.findByIdAndUpdate(id, data, { new: true });
+    res.status(201).json(category);
   }
 
   async deleteCategory(req, res) {
     const { id } = req.body;
-    const category = await Category.findOne(id);
-    category.status = false;
-    category.save();
+    const category = await Category.findByIdAndUpdate(
+      id,
+      { status: false },
+      { new: true }
+    );
     return res.status(201).json(category);
   }
 }
