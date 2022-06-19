@@ -2,11 +2,13 @@ const express = require("express");
 const morgan = require("morgan");
 const path = require("path");
 const cors = require("cors");
+const fileUpload = require("express-fileupload");
 const connection = require("../database/config");
 const userRoutes = require("../routes/user.routes");
 const authRoutes = require("../routes/auth.routes");
 const categoryRoutes = require("../routes/category.routes");
-const productRouter = require("../routes/product.routes");
+const productRoutes = require("../routes/product.routes");
+const fileRoutes = require("../routes/file.routes");
 
 class Server {
   constructor() {
@@ -25,6 +27,7 @@ class Server {
     this.app.use(cors());
     this.app.use(morgan("dev"));
     this.app.use(express.json());
+    this.app.use(fileUpload());
     this.app.use(express.static(path.join(__dirname, "../public")));
   }
 
@@ -32,7 +35,8 @@ class Server {
     this.app.use("/api/auth", authRoutes);
     this.app.use("/api/users", userRoutes);
     this.app.use("/api/categories", categoryRoutes);
-    this.app.use("/api/products", productRouter);
+    this.app.use("/api/products", productRoutes);
+    this.app.use("/api/files", fileRoutes);
   }
 
   listen() {
